@@ -1,4 +1,4 @@
-# Projeto-metAMORfose
+# Projeto-matching
 
 ### Sobre a organização dos diretórios
 Os 3 direstórios principais são get_data, matching e send_msg.
