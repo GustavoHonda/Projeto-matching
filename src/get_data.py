@@ -9,13 +9,6 @@ from typing import Any
 
 base_path = get_project_root()
 
-# Erros/implementações que tem pra fazer/corrigir nesse módulo:
-# 1. (FEITO)coluna price de df_respostas tem descrição (str) dos preços solicitados, precisa transformar para (int).
-# 2. (FEITO)extrair mais informações da descrição das respostas de cada paciente(implementação complicada).
-# 3. Acrescentar type columns para cada coluna do cliente.
-# 4. Trocar id das URL dos google sheets para os de produção.
-# 5. Testar sem envio de mensagens pressionando enter.
-
 def data_info(df, column)-> None:
     """
     Função auxiliar que mostra os valores únicos, tipo e frequência de uma coluna do DataFrame.
@@ -255,9 +248,9 @@ def rearange_matches():
 
 def main()-> None:
     df_resposta = open_respostas()
-    df_professional = open_professional()
-    df_resposta.to_csv("./csv/respostas.csv")
-    df_professional.to_csv("./csv/professional.csv")
+    # df_professional = open_professional()
+    # df_resposta.to_csv("./csv/respostas.csv")
+    # df_professional.to_csv("./csv/professional.csv")
 
 
 if __name__ == "__main__":
