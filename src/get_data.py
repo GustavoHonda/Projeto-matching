@@ -48,7 +48,7 @@ def extrair_precos(texto)-> list:
 def preprocess_respostas(df)->pd.DataFrame:
     
     # Rename columns
-    name_columns= ['time','name_paciente','e-mail','phone_paciente','area','free_service','price']
+    name_columns= ['time','name_paciente','e-mail','phone_paciente','area','description','free_service','price']
     columns = list(df.columns)
     for i, col in enumerate(name_columns):
         columns[i] = col
@@ -59,14 +59,13 @@ def preprocess_respostas(df)->pd.DataFrame:
 
     # Remove empty
     df = df.map(lambda x: np.nan if isinstance(x, str) and x.strip() == "" else x)
-    df = df.dropna(axis=1, how='all')
-    df = df.dropna(axis=0, subset=['time', 'name_paciente', 'phone_paciente', 'area', 'description'])
+    #df = df.dropna(axis=1, how='all')
+    df = df.dropna(axis=0, subset=['name_paciente', 'phone_paciente', 'area'])
 
-    df["consent"] = df["description"].str.contains("LGPD", case=False, na=False) 
 
     # Send respostas data to google sheets
     df.insert(0, "id_resposta", df.index)
-    df_respostas = df[['id_resposta','phone_paciente','time','free_service','price']].drop_duplicates().reset_index(drop=True)
+    df_respostas = df[['id_resposta','phone_paciente','time','free_service']].drop_duplicates().reset_index(drop=True)
     send_data(df=df_respostas, sheets_name="db-metAMORfose", page="Respostas")
 
     # Datetime column (optional)
