@@ -4,6 +4,10 @@ from collections import defaultdict
 from src.get_data import data_info, open_matches, save_matches, open_professional, open_respostas, open_mock_professional, open_mock_respostas
 from datetime import datetime
 
+MAX_ITERATIONS = 4
+NUMBER_OF_PACIENTES_PER_PROFESSIONAL = 4
+DELAY_TIME = 3
+
 def time_match(df_resposta: type[pd.DataFrame], df_matchings)-> pd.DataFrame:
     """Filtra os pacientes que já tiveram um match nos últimos 3 meses, para evitar spam para o paciente."""
     query = """
@@ -15,7 +19,7 @@ def time_match(df_resposta: type[pd.DataFrame], df_matchings)-> pd.DataFrame:
         LEFT JOIN df_matchings as matc
             ON matc.name_paciente = paci.name_paciente
             AND matc.area = paci.area
-            AND DATE(matc.match_time) > DATE('now', '-3 months')
+            AND DATE(matc.match_time) > DATE('now', '-{DELAY_TIME} months')
         WHERE match_time IS NOT NULL
     """
     recent_matches = sqldf(query, locals())
@@ -30,9 +34,13 @@ def time_match(df_resposta: type[pd.DataFrame], df_matchings)-> pd.DataFrame:
     
     matches = matches[matches['_merge'] == 'left_only']
     matches = matches.drop(columns='_merge')
+    
     return matches
 
 def all_match(df_professional, df_resposta,df_matchings)-> pd.DataFrame:
+    if df_resposta.empty:
+        raise ValueError("df_resposta está vazio. Verifique se os dados foram carregados corretamente.")
+
     """Realiza o matching entre profissionais e pacientes, considerando os critérios de área."""
     query = """
     SELECT 
@@ -57,7 +65,7 @@ def all_match(df_professional, df_resposta,df_matchings)-> pd.DataFrame:
 
 
 def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
-    """Cada paciente tenha no máximo 1 matching e cada profissional tenha no máximo 4 matchings."""
+    """Cada paciente tenha no máximo 1 matching e cada profissional tenha no máximo NUMBER_OF_PACIENTES_PER_PROFESSIONAL matchings."""
     query = """
     SELECT
         all_matches.datetime,
@@ -90,13 +98,13 @@ def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
             matchings_arquivados.add(tuple(row))
     matchings_existentes = defaultdict(int)
     professional_counts = defaultdict(int)
-    matchings_final = []
+    paciente_counts = defaultdict(int)
     
+    matchings_final = []
     condition = 1
+    
     while(condition):
         print(f"Iteração: {condition}")
-        paciente_counts = defaultdict(int)
-
         # Loop guloso para selecionar matchings
         for _, row in df_selected_matches.iterrows():
             paciente = row['phone_paciente']
@@ -110,7 +118,7 @@ def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
                     continue
             if paciente_counts[paciente] >= 1: # garante que cada paciente tenha no máximo 1 matching
                 continue
-            if professional_counts[professional] >= 4: # garante que cada profissional tenha no máximo 4 matchings
+            if professional_counts[professional] >= NUMBER_OF_PACIENTES_PER_PROFESSIONAL: # garante que cada profissional tenha no máximo NUMBER_OF_PACIENTES_PER_PROFESSIONAL matchings
                 continue
             if chave in matchings_existentes: # verifica se o matching já foi selecionado nessa iteração
                 continue
@@ -127,9 +135,9 @@ def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
             matchings_existentes[chave] = matchings_existentes.get(chave,0) + 1  # marca como existente
 
         # Verificar se todos os profissionais têm pelo menos 4 pacientes
-        if all(count >= 4 for count in professional_counts.values()):
+        if all(count >= NUMBER_OF_PACIENTES_PER_PROFESSIONAL for count in professional_counts.values()):
             condition = 0  # todos os profissionais têm pelo menos 4 pacientes
-        elif(condition < 3):
+        elif(condition < MAX_ITERATIONS):
             condition += 1
         else:
             condition = 0  # evita loop infinito, sai após 3 tentativas
@@ -145,8 +153,8 @@ def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
        
 
 def match(df_professional, df_resposta, df_matchings, save=False)-> pd.DataFrame:
-    exit(0)
     df_resposta = time_match(df_resposta, df_matchings)
+    df_resposta.to_csv("./csv/time_match_filter.csv", index=False)
     df_all_matches = all_match(df_professional, df_resposta,df_matchings)
     df_selected_matches = select_match(df_matchings,df_all_matches)
     
