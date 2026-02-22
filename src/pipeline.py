@@ -3,6 +3,8 @@ from src.get_data import open_professional, open_respostas, open_mock, open_matc
 from src.get_data import open_mock_professional, open_mock_respostas, data_info
 from src.send_msg import AWS_Sender
 from src.matching import match
+import tkinter as tk
+from tkinter import simpledialog, messagebox
 
 
 
@@ -51,8 +53,20 @@ def main(EXECUTION_MODE, SAFE_TO_SEND, SAVE_MATCH)-> int:
     return 0
 
 if __name__ == "__main__":
-    SAVE_MATCH = True     # True, False
-    SAFE_TO_SEND = True     # True, False
+    SAVE_MATCH = False    # True, False
+    SAFE_TO_SEND = True   # True, False
     EXECUTION_MODE = "mock"  # production, mock, manual
 
-    main(EXECUTION_MODE, SAFE_TO_SEND, SAVE_MATCH)
+    # Cria a janela principal oculta
+    root = tk.Tk()
+    root.withdraw()
+
+    # Mostra um pop-up para o usuário digitar algo
+    user_input = simpledialog.askstring("Sender", "Para confirmar o envio digite send:")
+
+    # Mostra o que foi digitado
+    if user_input == "send":
+        messagebox.showinfo(title="Sender",message="Envio confirmado!")
+        main(EXECUTION_MODE, SAFE_TO_SEND, SAVE_MATCH)
+    else:
+        messagebox.showwarning("Aviso", "A palavra digitada não foi send, cancelando o envio")

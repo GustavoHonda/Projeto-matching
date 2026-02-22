@@ -5,12 +5,12 @@ echo "Detectando sistema operacional..."
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 
     echo "Linux detectado"
-    PROJECT_DIR="$(pwd)"
+    PROJECT_DIR="/home/metamorfose/git/Projeto-metAMORfose"
 
     # Verifica Python 3.12
     if ! command -v python3.12 &> /dev/null; then
         echo "❌ Python 3.12 não encontrado. Instale usando seu gerenciador de pacotes ou pyenv."
-        exit 1
+        pause
     else
         python3.12 --version
     fi
@@ -29,11 +29,11 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     fi
 
     source venv/bin/activate
-    pyinstaller --onefile --console --name=production  --icon=img/logo.png main.py
-    echo "✅ Instalação concluída! Atalho criado na área de trabalho."
-    echo "Qualquer dúvida entrar em contato com gustavo.honda10@gmail.com"
+    python3 main.py
 
 else
     echo "⚠️ Este script é para Linux."
-    exit 1
+    pause
 fi
+
+pause

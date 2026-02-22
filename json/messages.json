@@ -1,0 +1,516 @@
+{
+    "messages": [
+        {
+            "id": "GXsksSxRjomHJvNGUdPpSA-gPAFA1thduU",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752697978,
+            "source": "mobile",
+            "text": {
+                "body": "Opaa"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "lcmPYdL3p8O4k9oFmY4bVg-gCwFA1thduU",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752697483,
+            "source": "mobile",
+            "text": {
+                "body": "Que horas?"
+            },
+            "context": {
+                "quoted_id": "pD_6lhk4b0.NZhA7BNQKtg-wK4FA1thduU",
+                "quoted_author": "5511950440023",
+                "quoted_content": {
+                    "body": "Talvez eu me atrase um pouco"
+                },
+                "quoted_type": "text"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "8wGbBWMVkRyOUUHWOWORrg-gvkBq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1752696852,
+            "source": "mobile",
+            "text": {
+                "body": "Oii gente tudo certo?"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "NFnp41AgYLIHsKNup.xeHQ-gD4FA1thduU",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752693608,
+            "source": "mobile",
+            "text": {
+                "body": "Simm"
+            },
+            "context": {
+                "quoted_id": "_aCEfg.8T4iC3wJGBnxPiA-wDMFA1thduU",
+                "quoted_author": "5511950440023",
+                "quoted_content": {
+                    "body": "17h30 no metrô paraíso, certo ?"
+                },
+                "quoted_type": "text"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "KCLg13D4lpQ7Cq9GXreArw-gAkFA1thduU",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752677693,
+            "source": "mobile",
+            "text": {
+                "body": "Daí pensa num valor pra eu te pagar 🙏🏻 pra compensar"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "_1sCooYqV0Ahg6rcIKTDxA-gCAFA1thduU",
+            "from_me": false,
+            "type": "video",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752677672,
+            "source": "mobile",
+            "video": {
+                "id": "mp4-ff5b02a2862a57402183aadc20a4c3c4-802005035b6176e5",
+                "mime_type": "video/mp4",
+                "file_size": 2577266,
+                "sha256": "bTjPi93TITd7F+29BWCZcLIvc/Ka/qoW8WkU/D4Zesc=",
+                "width": 848,
+                "height": 474,
+                "seconds": 11
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "UW0wDjH74kA3_FRT.XadQA-gk0Bq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1752677471,
+            "source": "mobile",
+            "text": {
+                "body": "Vcs conseguem vir no Metrô Paraíso 17h30?"
+            },
+            "from": "5511976154853",
+            "reactions": [
+                {
+                    "id": "9RtTuIfetwXdUizu5BZEEQ-wrcBq53jmf0E9g",
+                    "emoji": "👍",
+                    "t": 1752677575484,
+                    "unread": true
+                }
+            ]
+        },
+        {
+            "id": "Tmdo_2r54MCAWfXda5fwUw-gP8FA1thduU",
+            "from_me": false,
+            "type": "voice",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752677120,
+            "source": "mobile",
+            "voice": {
+                "id": "oga-4e6768ff6af9e0c08059f5dd6b97f053-80ff05035b6176e5",
+                "mime_type": "audio/ogg; codecs=opus",
+                "file_size": 155738,
+                "sha256": "EFNEjTDHfmVreR0lZe4nrQ/qEymspqgpvNojdqm+npQ=",
+                "seconds": 69
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "ldvD65.g1PuaRJOEGH95fg-gnABq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1752677043,
+            "source": "mobile",
+            "text": {
+                "body": "Pro rodizio 18h é bom? Pensei num rodízio que tem perto da minha vó na Vila Prudente, posso dar carona!"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "L4ZWnaFBh57zei17ZQpkOQ-gNwFA1thduU",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752677020,
+            "source": "mobile",
+            "text": {
+                "body": "Vou falar isso no grupo, 18h é bom? Pensei num rodízio que tem perto da minha vó na Vila Prudente, posso dar carona!"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "Cl1rSJlGVNusFCqD2yRCMA-gHsFA1thduU",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752676973,
+            "source": "mobile",
+            "text": {
+                "body": "Bom diaaa"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "gLRB8Orh7DQyRq4YBCOU7g-guoBq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1752509754,
+            "source": "mobile",
+            "text": {
+                "body": "Tudo certo pra quarta? Quero presentear vcs com um rodízio de pizza e comidss"
+            },
+            "from": "5511976154853",
+            "reactions": [
+                {
+                    "id": "jbj4Nxow9lotNz86NdGlew-wkwBq53jmf0E9g",
+                    "emoji": "❤️",
+                    "t": 1752515451057,
+                    "unread": true
+                }
+            ]
+        },
+        {
+            "id": "kOUIPkXYNyGyHVwlH4mSTg-gtYBq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1752509275,
+            "source": "mobile",
+            "text": {
+                "body": "Bom diaaa"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "SZEDeF3zzAkSJiHe8CAACQ-guIBq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1752346477,
+            "source": "mobile",
+            "text": {
+                "body": "Vcs podem hoje? Ou quarta-feira a noite?"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "ctUeD6tJl0nQxQAqAPnXFQ-gpwBq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1752262924,
+            "source": "mobile",
+            "text": {
+                "body": "A partir de que horas?"
+            },
+            "context": {
+                "quoted_id": "PrDxok.ZAtnEKys-woABq53jmf0E9g",
+                "quoted_author": "5511950440023",
+                "quoted_content": {
+                    "body": "só talvez se for de noite"
+                },
+                "quoted_type": "text"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "ykpsfKtXSjuFG_l4p98M2g-glABq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1752262495,
+            "source": "mobile",
+            "text": {
+                "body": "Gente quando vcs podem? Sábado ou domingo?"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "wPXK7ZlXi3sTFh4naiDdhQ-gGQFA1thduU",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752262472,
+            "source": "mobile",
+            "text": {
+                "body": "Preciso ver no grupo do happy hourr"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "A9GakOHtBqlZrRbSDIwTyQ-gFIFA1thduU",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752262446,
+            "source": "mobile",
+            "text": {
+                "body": "Mas n tenho ngm em mente"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "lMvq2wSmlsUv.o3BjZTzJA-gFwFA1thduU",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752262435,
+            "source": "mobile",
+            "text": {
+                "body": "Preciso ver outra pessoa"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "XpBNzHr_ud88yZ9GwmbnhQ-gGsFA1thduU",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752262414,
+            "source": "mobile",
+            "text": {
+                "body": "Vamoooss"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "2X3lWguiqomcJ6altz7yXw-gIcFA1thduU",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752196480,
+            "source": "mobile",
+            "text": {
+                "body": "Logicoo"
+            },
+            "context": {
+                "quoted_id": "0ixtvhla2uoa06BUhvqIqg-wCsFA1thduU",
+                "quoted_author": "5511950440023",
+                "quoted_content": {
+                    "body": "Podemos conversar amanhã?"
+                },
+                "quoted_type": "text"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "SEE3PoGJjITta9AuC0ie0A-gIAFA1thduU",
+            "from_me": false,
+            "type": "image",
+            "chat_id": "5511976154853@s.whatsapp.net",
+            "timestamp": 1752196265,
+            "source": "mobile",
+            "image": {
+                "id": "jpeg-4841373e81898c84ed6bd02e0b489ed0-808005035b6176e5",
+                "mime_type": "image/jpeg",
+                "file_size": 106340,
+                "sha256": "EfSzoudDWhcrzHnKW5QsHcTXenGVXPcbZTmI/VUO/xc=",
+                "caption": "Bora?",
+                "width": 720,
+                "height": 1600
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "yLo8UF0SW8NPzH_W6F46nQ-gq0Bq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1752165232,
+            "source": "mobile",
+            "text": {
+                "body": "O mais importante é a satisfação de vocês!"
+            },
+            "context": {
+                "quoted_id": "kTAZX.w9OqtCmHrhSlQgFg-gsQBq53jmf0E9g",
+                "quoted_author": "5511978078949",
+                "quoted_content": {
+                    "body": "Saudações \nFaz algo que você consegue, já é muito importante nos convidar.\nDeus te abençoe sempre"
+                },
+                "quoted_type": "text"
+            },
+            "from": "5511976154853",
+            "reactions": [
+                {
+                    "id": "m6hfDU5hc2MeR9wOTu850g-wi4Bq53jmf0E9g",
+                    "emoji": "🙏",
+                    "t": 1752178740628,
+                    "unread": true
+                }
+            ]
+        },
+        {
+            "id": "ZS7zOhk.oUuFowYkFSfq7Q-glQBq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1752164889,
+            "source": "mobile",
+            "text": {
+                "body": "Em comemoração a esse semestre quero muito poder gratificar vocês com um happy hour!! Vocês gostam de algo mais de beber ou de comer?"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "8prFXKa8OM2jGSxfTIBGFA-gvEBq53jmf0E9g",
+            "from_me": false,
+            "type": "image",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1751935299,
+            "source": "mobile",
+            "image": {
+                "id": "jpeg-f29ac55ca6bc38cda3192c5f4c804614-82f101ab9de399fd04f6",
+                "mime_type": "image/jpeg",
+                "file_size": 63752,
+                "sha256": "Iw30Ak85zhjzmG3hth/NHawnhmr+Q9SncSTc+2oX6IQ=",
+                "width": 576,
+                "height": 1280
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "IatLD8x4lkX7SQXLgYiDoA-gnkBq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1751930594,
+            "source": "mobile",
+            "text": {
+                "body": "Okkk"
+            },
+            "context": {
+                "quoted_id": "iUWn_brhnGdovTpQqfj1xA-gqsBq53jmf0E9g",
+                "quoted_author": "5511978078949",
+                "quoted_content": {
+                    "body": "Saudações \n\n@5511976154853 precisa enviar essa mensagem no Locaweb. \nO site não está sendo bem ativado e o certificado SSL não está instalando bem"
+                },
+                "quoted_type": "text"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "sloLy5MaICb_brpW.qv.yA-gr0Bq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1751926892,
+            "source": "mobile",
+            "text": {
+                "body": "😍😍😍😍😍"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "xIrfhElRMeFkozG8fNWIhQ-gmwBq53jmf0E9g",
+            "from_me": false,
+            "type": "link_preview",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1751836180,
+            "source": "mobile",
+            "link_preview": {
+                "body": "https://startup.google.com/intl/pt-BR/programs/accelerator/ai-first/brazil/",
+                "url": "https://startup.google.com/intl/pt-BR/programs/accelerator/ai-first/brazil/",
+                "title": "Google for Startups Accelerator: AI First (Brazil)",
+                "description": "Um programa de dez semanas que conecta recursos para capacitar startups brasileiras de IA (Seed a Série A) a escalar tecnologia.",
+                "preview": "data:image/jpeg;base64,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"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "i2JUfDFTX97WkQhgEAWSsA-glYBq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1751835029,
+            "source": "mobile",
+            "text": {
+                "body": "Qual email de vcs? Recebi um email da google pra um programa de acceleration"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "GTfUw8rFEu6Qt3n9TgRmPA-ghYBq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1751743179,
+            "source": "mobile",
+            "text": {
+                "body": "🙏🫂"
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "gX0fBC5NEO7pXLEmfbxFaw-gpoBq53jmf0E9g",
+            "from_me": false,
+            "type": "image",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1751740408,
+            "source": "mobile",
+            "image": {
+                "id": "jpeg-817d1f042e4d10eee95cb1267dbc456b-829a01ab9de399fd04f6",
+                "mime_type": "image/jpeg",
+                "file_size": 134758,
+                "sha256": "Z4NwfNZn2X5GJGWAbjOd36J0mdgEKA6FS/b3Hb4NVY4=",
+                "width": 720,
+                "height": 1600
+            },
+            "from": "5511976154853"
+        },
+        {
+            "id": "_MkTnHoLeF7YWkXrUkA8Fg-gssBq53jmf0E9g",
+            "from_me": false,
+            "type": "image",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1751739412,
+            "source": "mobile",
+            "image": {
+                "id": "jpeg-fcc9139c7a0b785ed85a45eb52403c16-82cb01ab9de399fd04f6",
+                "mime_type": "image/jpeg",
+                "file_size": 98571,
+                "sha256": "795RVEBonkiO0mnoLW5NCh16BmQebXL7yjaLjlEhZjg=",
+                "width": 720,
+                "height": 1600
+            },
+            "from": "5511976154853",
+            "reactions": [
+                {
+                    "id": "cwJ51CbT6Sqx.WsFzpgLTA-ghYBq53jmf0E9g",
+                    "emoji": "🙏",
+                    "t": 1751739550379
+                }
+            ]
+        },
+        {
+            "id": "AlW6AOU8quYHMIE.MQ7Mig-gn4Bq53jmf0E9g",
+            "from_me": false,
+            "type": "text",
+            "chat_id": "120363415922083062@g.us",
+            "timestamp": 1751738359,
+            "source": "mobile",
+            "text": {
+                "body": "Okkk"
+            },
+            "from": "5511976154853"
+        }
+    ],
+    "count": 100,
+    "total": 33
+}

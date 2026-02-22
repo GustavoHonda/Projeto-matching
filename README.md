@@ -63,3 +63,13 @@ python main.py
 5. Mantenha a janela do navegador com whatsapp vizível.
 6. Ter certeza que o caps lock não está ativo.
 7. Tomar cuidado com utilização de mais de um monitor.
+
+
+### Restrições
+
+1. Serão enviados 4 pacientes para cada um dos profissionais a cada execução do código.
+2. Esses pacientes serão diferentes para cada profissional.
+3. Os pacientes não serão enviados novamente no período de 6 meses.
+4. O paciente receberá mais de uma categoria de profissional caso solicitado.
+5. Não há reincidencia de envio de um paciente para o mesmo profissional para uma mesma categoria.
+

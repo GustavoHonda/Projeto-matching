@@ -9,13 +9,6 @@ from typing import Any
 
 base_path = get_project_root()
 
-# Erros/implementações que tem pra fazer/corrigir nesse módulo:
-# 1. (FEITO)coluna price de df_respostas tem descrição (str) dos preços solicitados, precisa transformar para (int).
-# 2. (FEITO)extrair mais informações da descrição das respostas de cada paciente(implementação complicada).
-# 3. Acrescentar type columns para cada coluna do cliente.
-# 4. Trocar id das URL dos google sheets para os de produção.
-# 5. Testar sem envio de mensagens pressionando enter.
-
 def data_info(df, column)-> None:
     """
     Função auxiliar que mostra os valores únicos, tipo e frequência de uma coluna do DataFrame.
@@ -59,14 +52,13 @@ def preprocess_respostas(df)->pd.DataFrame:
 
     # Remove empty
     df = df.map(lambda x: np.nan if isinstance(x, str) and x.strip() == "" else x)
-    df = df.dropna(axis=1, how='all')
-    df = df.dropna(axis=0, subset=['time', 'name_paciente', 'phone_paciente', 'area', 'description'])
+    #df = df.dropna(axis=1, how='all')
+    df = df.dropna(axis=0, subset=['name_paciente', 'phone_paciente', 'area'])
 
-    df["consent"] = df["description"].str.contains("LGPD", case=False, na=False) 
 
     # Send respostas data to google sheets
     df.insert(0, "id_resposta", df.index)
-    df_respostas = df[['id_resposta','phone_paciente','time','free_service','price']].drop_duplicates().reset_index(drop=True)
+    df_respostas = df[['id_resposta','phone_paciente','time','free_service']].drop_duplicates().reset_index(drop=True)
     send_data(df=df_respostas, sheets_name="db-metAMORfose", page="Respostas")
 
     # Datetime column (optional)
@@ -256,9 +248,9 @@ def rearange_matches():
 
 def main()-> None:
     df_resposta = open_respostas()
-    df_professional = open_professional()
-    df_resposta.to_csv("./csv/respostas.csv")
-    df_professional.to_csv("./csv/professional.csv")
+    # df_professional = open_professional()
+    # df_resposta.to_csv("./csv/respostas.csv")
+    # df_professional.to_csv("./csv/professional.csv")
 
 
 if __name__ == "__main__":
