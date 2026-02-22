@@ -5,6 +5,7 @@ from src.get_data import data_info, open_matches, save_matches, open_professiona
 from datetime import datetime
 
 def time_match(df_resposta: type[pd.DataFrame], df_matchings)-> pd.DataFrame:
+    """Filtra os pacientes que já tiveram um match nos últimos 3 meses, para evitar spam para o paciente."""
     query = """
     SELECT
         paci.name_paciente,
@@ -18,6 +19,7 @@ def time_match(df_resposta: type[pd.DataFrame], df_matchings)-> pd.DataFrame:
         WHERE match_time IS NOT NULL
     """
     recent_matches = sqldf(query, locals())
+
     matches = (
     df_resposta
     .merge(recent_matches[['name_paciente', 'area']],
@@ -25,11 +27,13 @@ def time_match(df_resposta: type[pd.DataFrame], df_matchings)-> pd.DataFrame:
            how='left',
            indicator=True)
     )
+    
     matches = matches[matches['_merge'] == 'left_only']
     matches = matches.drop(columns='_merge')
     return matches
 
 def all_match(df_professional, df_resposta,df_matchings)-> pd.DataFrame:
+    """Realiza o matching entre profissionais e pacientes, considerando os critérios de área."""
     query = """
     SELECT 
         paci.name_paciente,
@@ -48,12 +52,12 @@ def all_match(df_professional, df_resposta,df_matchings)-> pd.DataFrame:
     JOIN df_resposta paci
         ON paci.area = prof.area
     """
-    
     all_matches = sqldf(query, locals())
     return all_matches
 
 
 def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
+    """Cada paciente tenha no máximo 1 matching e cada profissional tenha no máximo 4 matchings."""
     query = """
     SELECT
         all_matches.datetime,
@@ -75,9 +79,9 @@ def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
     """
     
     df_selected_matches = sqldf(query, locals())
-    
-    # Embaralhar para reduzir viés
     df_selected_matches = df_selected_matches.sample(frac=1, random_state=42).reset_index(drop=True)
+
+
 
     # contadores
     matchings_arquivados = set()
@@ -99,16 +103,16 @@ def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
             professional = row['phone_professional']
             chave = (paciente, professional)
 
-            if chave in matchings_arquivados:
+            if chave in matchings_arquivados: # verifica se o matching já foi feito antes
                 if condition > 2:
                     pass
                 else:
                     continue
-            if paciente_counts[paciente] >= 1:
+            if paciente_counts[paciente] >= 1: # garante que cada paciente tenha no máximo 1 matching
                 continue
-            if professional_counts[professional] >= 4:
+            if professional_counts[professional] >= 4: # garante que cada profissional tenha no máximo 4 matchings
                 continue
-            if chave in matchings_existentes:
+            if chave in matchings_existentes: # verifica se o matching já foi selecionado nessa iteração
                 continue
 
             # garante homogeneidade:
@@ -141,6 +145,7 @@ def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
        
 
 def match(df_professional, df_resposta, df_matchings, save=False)-> pd.DataFrame:
+    exit(0)
     df_resposta = time_match(df_resposta, df_matchings)
     df_all_matches = all_match(df_professional, df_resposta,df_matchings)
     df_selected_matches = select_match(df_matchings,df_all_matches)
@@ -148,7 +153,6 @@ def match(df_professional, df_resposta, df_matchings, save=False)-> pd.DataFrame
 
     df_selected_matches["match_time"] = datetime.now()   
     if not df_selected_matches.empty:
-        print("not empty")
         print(df_selected_matches)
         save_matches(df_selected_matches,df_all_matches,save)
 
@@ -165,14 +169,14 @@ def main()-> None:
 
 def mock()-> None:
     df_professional = open_mock_professional()
-    # df_paciente = open_mock_respostas()
+    df_paciente = open_mock_respostas()
     df_paciente = open_respostas()
     df_matches = open_matches()
 
-    # print(df_professional.head())
-    # print(df_paciente.head())
-    # print(df_matches.head())
-    # resultado = match(df_professional, df_paciente, df_matches,False)
+    print(df_professional.head())
+    print(df_paciente.head())
+    print(df_matches.head())
+    resultado = match(df_professional, df_paciente, df_matches,False)
     resultado = time_match(df_paciente, df_matches)
 
     print(resultado.head(20))
