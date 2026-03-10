@@ -39,7 +39,7 @@ class AWS_Sender(SendMsg):
             },
             Content={
                 'Template': {
-                    'TemplateName': 'metamorfose_template',
+                    'TemplateName': 'metamorfose_template2',
                     'TemplateData': template_json
                 }
             }
@@ -146,12 +146,12 @@ def check_templates(name):
         return False
 
 if __name__ == '__main__':
-    template_name = 'metamorfose_template'
-    # check = check_templates(template_name)
+    template_name = 'metamorfose_template2'
+    check = check_templates(template_name)
     # if check:
     #     delete_template(template_name)
     # create_template(template_name)
-    df = open_mock()
-    sender = AWS_Sender()
-    response = sender.send_batch(df)
-    print(response)
+    # df = open_mock()
+    # sender = AWS_Sender()
+    # response = sender.send_batch(df)
+    # print(response)
