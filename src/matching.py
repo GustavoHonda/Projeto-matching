@@ -8,6 +8,11 @@ MAX_ITERATIONS = 4
 NUMBER_OF_PACIENTES_PER_PROFESSIONAL = 4
 DELAY_TIME = 3
 
+def one_category_match(df_professional: type[pd.DataFrame])-> pd.DataFrame:
+    df_professional = df_professional.sample(frac=1).reset_index(drop=True)
+    df_professional = df_professional.drop_duplicates(subset=['phone_professional'], keep='first')
+    return df_professional
+
 def time_match(df_resposta: type[pd.DataFrame], df_matchings)-> pd.DataFrame:
     """Filtra os pacientes que já tiveram um match nos últimos 3 meses, para evitar spam para o paciente."""
     query = """
@@ -89,8 +94,6 @@ def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
     df_selected_matches = sqldf(query, locals())
     df_selected_matches = df_selected_matches.sample(frac=1, random_state=42).reset_index(drop=True)
 
-
-
     # contadores
     matchings_arquivados = set()
     if not df_matchings.empty:
@@ -153,12 +156,12 @@ def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
        
 
 def match(df_professional, df_resposta, df_matchings, save=False)-> pd.DataFrame:
-    df_resposta = time_match(df_resposta, df_matchings)
+    # df_professional = one_category_match(df_professional) # Seleciona apenas uma categoria por profissional para garantir envio de apenas 4 mensagens ao tododf_professional.to_csv("./csv/one_category_match.csv", index=False)
+    df_resposta = time_match(df_resposta, df_matchings) # Seleciona apenas pacientes que não tiveram match nos últimos 3 meses para evitar spam
     df_resposta.to_csv("./csv/time_match_filter.csv", index=False)
-    df_all_matches = all_match(df_professional, df_resposta,df_matchings)
-    df_selected_matches = select_match(df_matchings,df_all_matches)
+    df_all_matches = all_match(df_professional, df_resposta,df_matchings) # Lista todos o matches possíveis entre profissionais e pacientes.
+    df_selected_matches = select_match(df_matchings,df_all_matches)  # Seleciona os matches finais garantindo distribuição equitativa entre profisisonais.
     
-
     df_selected_matches["match_time"] = datetime.now()   
     if not df_selected_matches.empty:
         print(df_selected_matches)
@@ -186,10 +189,9 @@ def mock()-> None:
     print(df_matches.head())
     resultado = match(df_professional, df_paciente, df_matches,False)
     resultado = time_match(df_paciente, df_matches)
-
     print(resultado.head(20))
 
 
 if __name__ == "__main__":
-    # main()
-    mock()
+    main()
+    # mock()
