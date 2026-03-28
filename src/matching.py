@@ -1,48 +1,14 @@
 import pandas as pd
 from pandasql import sqldf
+from src.prematch import prepare_df
 from collections import defaultdict
 from src.get_data import data_info, open_matches, save_matches, open_professional, open_respostas, open_mock_professional, open_mock_respostas
 from datetime import datetime
 
 MAX_ITERATIONS = 4
 NUMBER_OF_PACIENTES_PER_PROFESSIONAL = 4
-DELAY_TIME = 3
 
-def one_category_match(df_professional: type[pd.DataFrame])-> pd.DataFrame:
-    df_professional = df_professional.sample(frac=1).reset_index(drop=True)
-    df_professional = df_professional.drop_duplicates(subset=['phone_professional'], keep='first')
-    return df_professional
-
-def time_match(df_resposta: type[pd.DataFrame], df_matchings)-> pd.DataFrame:
-    """Filtra os pacientes que já tiveram um match nos últimos 3 meses, para evitar spam para o paciente."""
-    query = """
-    SELECT
-        paci.name_paciente,
-        paci.area,
-        matc.match_time as match_time
-        FROM df_resposta as paci
-        LEFT JOIN df_matchings as matc
-            ON matc.name_paciente = paci.name_paciente
-            AND matc.area = paci.area
-            AND DATE(matc.match_time) > DATE('now', '-{DELAY_TIME} months')
-        WHERE match_time IS NOT NULL
-    """
-    recent_matches = sqldf(query, locals())
-
-    matches = (
-    df_resposta
-    .merge(recent_matches[['name_paciente', 'area']],
-           on=['name_paciente', 'area'],
-           how='left',
-           indicator=True)
-    )
-    
-    matches = matches[matches['_merge'] == 'left_only']
-    matches = matches.drop(columns='_merge')
-    
-    return matches
-
-def all_match(df_professional, df_resposta,df_matchings)-> pd.DataFrame:
+def match_all(df_professional, df_resposta,df_matchings)-> pd.DataFrame:
     if df_resposta.empty:
         raise ValueError("df_resposta está vazio. Verifique se os dados foram carregados corretamente.")
 
@@ -65,33 +31,37 @@ def all_match(df_professional, df_resposta,df_matchings)-> pd.DataFrame:
     JOIN df_resposta paci
         ON paci.area = prof.area
     """
-    all_matches = sqldf(query, locals())
-    return all_matches
+    match_all = sqldf(query, locals())
+    return match_all
 
-
-def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
+def match_previous(df_match_all, df_matchings)-> pd.DataFrame:
     """Cada paciente tenha no máximo 1 matching e cada profissional tenha no máximo NUMBER_OF_PACIENTES_PER_PROFESSIONAL matchings."""
     query = """
     SELECT
-        all_matches.datetime,
-        all_matches.name_paciente,
-        all_matches.name_professional,
-        all_matches.phone_paciente,
-        all_matches.phone_professional,
-        all_matches.description,
-        all_matches.area,
-        all_matches.price_max,
-        all_matches.price_min,
-        all_matches.email_professional
-    FROM df_all_matches all_matches
+        match_all.datetime,
+        match_all.name_paciente,
+        match_all.name_professional,
+        match_all.phone_paciente,
+        match_all.phone_professional,
+        match_all.description,
+        match_all.area,
+        match_all.price_max,
+        match_all.price_min,
+        match_all.email_professional
+    FROM df_match_all match_all
     LEFT JOIN df_matchings prev
-        ON all_matches.phone_paciente = prev.phone_paciente
-        AND all_matches.phone_professional = prev.phone_professional
+        ON match_all.phone_paciente = prev.phone_paciente
+        AND match_all.phone_professional = prev.phone_professional
     WHERE prev.phone_paciente IS NULL
     AND prev.phone_professional IS NULL
     """
     
     df_selected_matches = sqldf(query, locals())
+    return df_selected_matches
+
+
+def select_match(df_matchings, df_match_all) -> pd.DataFrame:
+    df_selected_matches = match_previous(df_match_all,df_matchings)
     df_selected_matches = df_selected_matches.sample(frac=1, random_state=42).reset_index(drop=True)
 
     # contadores
@@ -151,21 +121,19 @@ def select_match(df_matchings, df_all_matches) -> pd.DataFrame:
 
             print(" ⚠️ Limite de iterações atingido, saindo do loop. Nem todos os profissionais atingiram 4 pacientes.")
 
-    result_df = pd.DataFrame(matchings_final, columns=df_all_matches.columns)
+    result_df = pd.DataFrame(matchings_final, columns=df_match_all.columns)
     return result_df
        
 
 def match(df_professional, df_resposta, df_matchings, save=False)-> pd.DataFrame:
-    # df_professional = one_category_match(df_professional) # Seleciona apenas uma categoria por profissional para garantir envio de apenas 4 mensagens ao tododf_professional.to_csv("./csv/one_category_match.csv", index=False)
-    df_resposta = time_match(df_resposta, df_matchings) # Seleciona apenas pacientes que não tiveram match nos últimos 3 meses para evitar spam
-    df_resposta.to_csv("./csv/time_match_filter.csv", index=False)
-    df_all_matches = all_match(df_professional, df_resposta,df_matchings) # Lista todos o matches possíveis entre profissionais e pacientes.
-    df_selected_matches = select_match(df_matchings,df_all_matches)  # Seleciona os matches finais garantindo distribuição equitativa entre profisisonais.
+    df_professional, df_resposta, df_matchings = prepare_df(df_professional, df_resposta, df_matchings) # Filtra os pacientes que tiveram um match nos últimos 3 meses e remove profissionais duplicados.
+    df_match_all = match_all(df_professional, df_resposta,df_matchings) # Lista todos o matches possíveis entre profissionais e pacientes.
+    df_selected_matches = select_match(df_matchings,df_match_all)  # Seleciona os matches finais garantindo distribuição equitativa entre profisisonais.
     
     df_selected_matches["match_time"] = datetime.now()   
     if not df_selected_matches.empty:
         print(df_selected_matches)
-        save_matches(df_selected_matches,df_all_matches,save)
+        save_matches(df_selected_matches,df_match_all,save)
 
     return df_selected_matches
 
@@ -174,8 +142,12 @@ def main()-> None:
     df_professional = open_professional()
     df_resposta = open_respostas()
     df_matchings = open_matches()
-    
-    resultado = match(df_professional,df_resposta,df_matchings,False)
+
+    df_resposta.to_csv("./csv/respostas.csv", index=False)
+    df_professional.to_csv("./csv/professional.csv", index=False)
+    df_matchings.to_csv("./csv/matchings.csv", index = False)
+
+    result = match(df_professional,df_resposta,df_matchings,False)
 
 
 def mock()-> None:
@@ -188,7 +160,6 @@ def mock()-> None:
     print(df_paciente.head())
     print(df_matches.head())
     resultado = match(df_professional, df_paciente, df_matches,False)
-    resultado = time_match(df_paciente, df_matches)
     print(resultado.head(20))
 
 

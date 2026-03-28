@@ -6,11 +6,13 @@ from src.matching import match
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 
+SAVE_MATCH = True    # True, False
+SAFE_TO_SEND = False   # True, False
+EXECUTION_MODE = "production"  # production, mock, manual
 
+def main(execution_mode, safe_to_send, save_match)-> int:
 
-def main(EXECUTION_MODE, SAFE_TO_SEND, SAVE_MATCH)-> int:
-
-    if EXECUTION_MODE == "production":
+    if execution_mode == "production":
         print("Running in production mode...")
         df_professional = open_professional()
         print("professionals opened...")
@@ -18,20 +20,20 @@ def main(EXECUTION_MODE, SAFE_TO_SEND, SAVE_MATCH)-> int:
         print("respostas opened...")
         df_matchings = open_matches()
         print("respostas matchigs...")
-        matched = match(df_professional, df_respostas, df_matchings,SAVE_MATCH)
+        matched = match(df_professional, df_respostas, df_matchings,save_match)
         df_respostas.to_csv("./csv/respostas.csv")
         df_professional.to_csv("./csv/professional.csv")
 
-    elif EXECUTION_MODE == "mock":
+    elif execution_mode == "mock":
         print("Running in mock mode...")
         df_professional = open_mock_professional()
         df_respostas = open_mock_respostas()
         df_matchings = open_matches()
-        matched = match(df_professional, df_respostas, df_matchings,SAVE_MATCH)
+        matched = match(df_professional, df_respostas, df_matchings,save_match)
         df_respostas.to_csv("./csv/respostas.csv")
         df_professional.to_csv("./csv/professional.csv")
 
-    elif EXECUTION_MODE == "manual":
+    elif execution_mode == "manual":
         print("Running in manual mode...")
         df_professional = open_professional()
         print("professionals opened...")
@@ -44,7 +46,7 @@ def main(EXECUTION_MODE, SAFE_TO_SEND, SAVE_MATCH)-> int:
         raise ValueError("valor de EXECUTION_MODE inválido")
 
 
-    if SAFE_TO_SEND:
+    if safe_to_send:
         
         print("Safe to execute, sending batch...")
         sender  = AWS_Sender()
@@ -53,20 +55,19 @@ def main(EXECUTION_MODE, SAFE_TO_SEND, SAVE_MATCH)-> int:
     return 0
 
 if __name__ == "__main__":
-    SAVE_MATCH = False    # True, False
-    SAFE_TO_SEND = False   # True, False
-    EXECUTION_MODE = "mock"  # production, mock, manual
-
     # Cria a janela principal oculta
-    root = tk.Tk()
-    root.withdraw()
+    
+    # root = tk.Tk()
+    # root.withdraw()
 
-    # Mostra um pop-up para o usuário digitar algo
-    user_input = simpledialog.askstring("Sender", "Para confirmar o envio digite send:")
+    # # Mostra um pop-up para o usuário digitar algo
+    # user_input = simpledialog.askstring("Sender", "Para confirmar o envio digite send:")
+    user_input = "send"
 
     # Mostra o que foi digitado
     if user_input == "send":
-        messagebox.showinfo(title="Sender",message="Envio confirmado!")
+        # messagebox.showinfo(title="Sender",message="Envio confirmado!")
         main(EXECUTION_MODE, SAFE_TO_SEND, SAVE_MATCH)
     else:
-        messagebox.showwarning("Aviso", "A palavra digitada não foi send, cancelando o envio")
+        # messagebox.showwarning("Aviso", "A palavra digitada não foi send, cancelando o envio")
+        pass
