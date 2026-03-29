@@ -1,16 +1,15 @@
 import pandas as pd
 from datetime import datetime
-from src.matching import match, time_match, recent_match
-from dateutil.relativedelta import relativedelta
+from src.matching import match, match_all
 
 df_professional = pd.DataFrame([
         {"name_professional": "Prof A", "area": "psicologia", "phone_professional": "111", "price": 200, "freq": 0, "email_professional":"abc@gmail.com"},
         {"name_professional": "Prof X", "area": "psicoterapia", "phone_professional": "222", "price": 200, "freq": 0, "email_professional":"abc@gmail.com"}
     ])
 df_resposta = pd.DataFrame([
-    {"name_paciente": "Paciente A","description":"description1", "area": "psicologia", "datetime": "31/08/2024 21:33:09", "phone_paciente": "(11)111111111", "price_min": 35,"price_max": 150},
-    {"name_paciente": "Paciente B","description":"description2", "area": "psicologia", "datetime": "31/08/2024 21:33:08", "phone_paciente": "(11)222222222", "price_min": 35,"price_max": 150},
-    {"name_paciente": "Paciente C","description":"description2", "area": "psicoterapia", "datetime": "31/08/2024 21:33:08", "phone_paciente": "(11)333333333", "price_min": 35,"price_max": 150},
+    {"name_paciente": "Paciente A", "area": "psicologia", "datetime": "31/08/2024 21:33:09", "phone_paciente": "(11)111111111"},
+    {"name_paciente": "Paciente B", "area": "psicologia", "datetime": "31/08/2024 21:33:08", "phone_paciente": "(11)222222222"},
+    {"name_paciente": "Paciente C", "area": "psicoterapia", "datetime": "31/08/2024 21:33:08", "phone_paciente": "(11)333333333"},
 ])
 
 now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -20,8 +19,6 @@ df_matchings = pd.DataFrame([
     {"name_paciente":"Paciente B","name_professional":"Prof 4","phone_paciente":"(11)222222222","phone_professional":"1234567890","area":"psicologia","datetime":"31/08/2024 21:33:09","price_min":"35","price_max":"150", "email_professional":"abc@gmail.com", "match_time":now},
     {"name_paciente":"Paciente B","name_professional":"Prof 4","phone_paciente":"(11)222222222","phone_professional":"1234567890","area":"psicologia","datetime":"19/02/2025 21:33:09","price_min":"35","price_max":"150", "email_professional":"abc@gmail.com", "match_time":"2024-08-31 21:33:09"},
 ])
-
-df_matchings.to_csv("matchings_test.csv", index=False)
 
 result = match(df_professional, df_resposta, df_matchings)
 
@@ -42,7 +39,14 @@ def test_match_values3()-> None:
     assert "(11)111111111" not in result['phone_paciente'].values
     assert "(11)222222222" not in result['phone_paciente'].values
 
-def test_recent_match() -> None:
-    recent = recent_match(df_resposta, df_matchings)
-    assert not recent.empty
-    assert len(recent) == 2
+# def test_recent_match() -> None:
+#     recent = recent_match(df_resposta, df_matchings)
+#     assert not recent.empty
+#     assert len(recent) == 2
+
+
+def test_match_all() -> None:
+    df_professiona = pd.read_csv("./csv/professional1.csv")
+    df_respost = pd.read_csv("./csv/resposta1.csv")
+    result = match_all(df_professiona, df_respost, pd.DataFrame())
+    assert not result.empty

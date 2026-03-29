@@ -154,7 +154,7 @@ def new_template(template_name = 'metamorfose_template3'):
 
 if __name__ == '__main__':
     new_template('metamorfose_template3')
-    # df = open_mock()
-    # sender = AWS_Sender()
-    # response = sender.send_batch(df)
-    # print(response)
+    df = open_mock()
+    sender = AWS_Sender()
+    response = sender.send_batch(df)
+    print(response)

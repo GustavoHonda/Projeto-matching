@@ -41,7 +41,7 @@ def extrair_precos(texto)-> list:
 def preprocess_respostas(df)->pd.DataFrame:
     
     # Rename columns
-    name_columns= ['datetime','name_paciente','e-mail','phone_paciente','area','description']
+    name_columns= ['datetime','name_paciente','e-mail','phone_paciente','area']
     columns = list(df.columns)
     for i, col in enumerate(name_columns):
         columns[i] = col
@@ -50,8 +50,6 @@ def preprocess_respostas(df)->pd.DataFrame:
     # Clean phone number
     df["phone_paciente"] = df["phone_paciente"].astype(str).str.replace(r"\D", "", regex=True)
 
-    
-    
     # Area column
     df.loc[:,"area"] = df["area"].str.split(",")
     df = df.explode('area')
@@ -65,9 +63,9 @@ def preprocess_respostas(df)->pd.DataFrame:
     df = df.dropna(axis=0, subset=['name_paciente', 'phone_paciente', 'area'])
     df = df.fillna('').infer_objects(copy=False)
     df.reset_index(inplace=True, drop=True)
-    df = df.drop_duplicates(subset=['phone_paciente'], keep='first')
-    df_paciente = df[['phone_paciente','name_paciente','e-mail','datetime']].drop_duplicates(subset=['phone_paciente'], keep='first')
-    
+    df_paciente = df.drop_duplicates(subset=['phone_paciente'], keep='first')
+    df_paciente = df_paciente[['phone_paciente','name_paciente','e-mail','datetime']]
+
     update_data(df=df_paciente_area, sheets_name="db-metAMORfose", page="Paciente_area", index="phone_paciente")
     update_data(df=df_paciente, sheets_name="db-metAMORfose", page="Paciente", index="phone_paciente")
     return df
@@ -100,18 +98,16 @@ def preprocess_professional(df) -> pd.DataFrame:
     df = df.dropna(axis=0,subset=['name_professional', 'area', 'phone_professional','email_professional'])
     df = df.fillna('').infer_objects(copy=False)
     df.reset_index(inplace=True, drop=True)
-    df = df.drop_duplicates(subset=['phone_professional'], keep='first')
-
-    
+    df_professional = df.drop_duplicates(subset=['phone_professional'], keep='first')
+    df_professional = df_professional[['phone_professional','name_professional','email_professional','area']]
 
     update_data(df=df_professional_area, sheets_name="db-metAMORfose", page="Professional_area", index="phone_professional")
-    update_data(df=df, sheets_name="db-metAMORfose", page="Professional", index="phone_professional")
+    update_data(df=df_professional, sheets_name="db-metAMORfose", page="Professional", index="phone_professional")
 
     # Remove linhas que tem valor da coluna 'active' como zero
     df = df[df['active'] == 1] 
 
     return df
-
 
 def open_respostas()-> pd.DataFrame:
     df = get_data(sheets_name="Respostas-2025",page="Respostas")
@@ -125,7 +121,6 @@ def open_professional()-> pd.DataFrame:
     df = preprocess_professional(df)
     return df
 
-
 def open_matches()-> pd.DataFrame:
     try:
         df = get_data(sheets_name="db-metAMORfose", page="Matches")
@@ -137,13 +132,11 @@ def open_matches()-> pd.DataFrame:
         print(f"Error in open_matchings function.")
         return pd.DataFrame()
     
-    
 def save_matches(df_matches, df_match_all,save)->None:
     base_dir = get_project_root()
-    df_match_all.to_csv(Path(base_dir, f'./csv/matching_all.csv'), index=False)
-    df_matches.to_csv(Path(base_dir, f"./csv/matchings_selected.csv"),index=False)
+    df_matches.to_csv(Path(base_dir, f"./csv/matchings_result.csv"),index=False)
     
-    df = df_matches[["name_paciente", "name_professional", "phone_paciente", "phone_professional","description", "area", "datetime", "price_min", "price_max","email_professional","match_time"]]
+    df = df_matches[["name_paciente", "name_professional", "phone_paciente", "phone_professional", "area", "datetime", "email_professional","match_time"]]
 
     if save:
         df = df.astype(str)
@@ -151,13 +144,11 @@ def save_matches(df_matches, df_match_all,save)->None:
         append_data(df=df, sheets_name="db-metAMORfose", page="Matches")
         print("Data send!")
 
-
 def open_mock()->pd.DataFrame:
-    mock_path = Path(base_path, "csv", "mock_match.csv")
+    mock_path = Path(base_path, "csv/mock/", "mock_match.csv")
     df = pd.read_csv(mock_path, sep=",",encoding="utf-8",index_col=0)
     df.reset_index(inplace=True)
     return df
-
 
 def open_mock_professional()->pd.DataFrame:
     mock_path = Path(base_path, "csv", "mock_professionais.csv")
@@ -166,14 +157,12 @@ def open_mock_professional()->pd.DataFrame:
     df = preprocess_professional(df)
     return df
 
-
 def open_mock_respostas()->pd.DataFrame:
     mock_path = Path(base_path, "csv", "mock_respostas.csv")
     df = pd.read_csv(mock_path, sep=",",encoding="utf-8",index_col=0)
     df.reset_index(inplace=True)
     df = preprocess_respostas(df)
     return df
-
 
 def set_credentials() -> gspread.Client:
     scope = [
@@ -186,14 +175,12 @@ def set_credentials() -> gspread.Client:
     client = gspread.authorize(creds)
     return client
 
-
 def send_data(sheets_name="db-metAMORfose", page = None,df=None)-> None:
     client = set_credentials()
     sheet = client.open(sheets_name)
     sheet = sheet.worksheet(page)
     data = [df.columns.astype(str).tolist()] + df.astype(str).values.tolist()
     sheet.update(values=data, range_name="A1")
-
     
 def get_data(sheets_name = "db-metAMORfose", page = None)-> pd.DataFrame:
     client = set_credentials()

@@ -47,14 +47,14 @@ def test_get_professional(monkeypatch)-> None:
 def test_get_matches(monkeypatch)-> None:
     df_matches = open_matches()
     assert not df_matches.empty
-    for col in ["name_paciente","name_professional","phone_paciente","phone_professional","description","area","datetime","min_price","max_price","email_professional","match_time"]:
+    for col in ["name_paciente","name_professional","phone_paciente","phone_professional","area","datetime","min_price","max_price","email_professional","match_time"]:
         assert col in list(df_matches.columns)
 
 
 def test_get_respostas(monkeypatch)-> None:
     df_respostas = open_respostas()
     assert not df_respostas.empty
-    for col in ["name_paciente" ,"phone_paciente", "area", "price_min", "price_max", "datetime", 'description']:
+    for col in ["name_paciente" ,"phone_paciente", "area", "price_min", "price_max", "datetime"]:
         assert col in list(df_respostas.columns)
 
 
