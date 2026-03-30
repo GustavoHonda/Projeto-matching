@@ -1,5 +1,5 @@
 from tempfile import template
-from src.get_data import open_matches, open_mock, open_professional
+from src.get_data import open_send_matchings
 from src.utils.path import get_project_root
 from abc import ABC, abstractmethod
 import os
@@ -154,7 +154,7 @@ def new_template(template_name = 'metamorfose_template3'):
 
 if __name__ == '__main__':
     new_template('metamorfose_template3')
-    df = open_mock()
+    df = open_send_matchings()
     sender = AWS_Sender()
     response = sender.send_batch(df)
     print(response)

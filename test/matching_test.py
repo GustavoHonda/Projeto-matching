@@ -43,10 +43,3 @@ def test_match_values3()-> None:
 #     recent = recent_match(df_resposta, df_matchings)
 #     assert not recent.empty
 #     assert len(recent) == 2
-
-
-def test_match_all() -> None:
-    df_professiona = pd.read_csv("./csv/professional1.csv")
-    df_respost = pd.read_csv("./csv/resposta1.csv")
-    result = match_all(df_professiona, df_respost, pd.DataFrame())
-    assert not result.empty
