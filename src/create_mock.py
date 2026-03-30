@@ -5,23 +5,16 @@ from faker import Faker
 fake = Faker('pt_BR')
 random.seed(42)
 
-# Cabeçalhos
-columns = [
-    "Carimbo de data/hora",
-    "Nome do paciente",
-    "Endereço de e-mail",
-    "Seu nome e whatsapp (escreva wa.me/55 e seu número com ddd)",
-    "Qual área professional de saúde você precisa urgente?",
-    "Quais principais problemas você enfrenta hoje?",
-    "Qual é um valor justo por sessão para você?",
-    "Nós temos um programa de Assistência pra Saúde Mental gratuita. Mas além dessa Assistência, temos Profissionais de saúde que podem te atender de maneira personalizada e humanizada. Você quer receber atividades terapêuticas gratuitas, além da indicação de Profissionais de Saúde?",
-]
+areas = ["Personal trainer",
+         "Nutrição",
+         "Psicoterapia",
+         "Clínico geral",
+         "Terapia",
+         "Terapia holística"
+         ]
 
 def generate_mock_respostas(num_rows = 50)->pd.DataFrame:
     # Criar mock de respostas
-
-    areas = ["Personal trainer", "Nutrição", "Psicoterapia", "Clínico geral", "Terapia", "Terapia holística"]
-
     data = []
     phones = ["11912345678", "11950440023", "11977777777"]
     for i in range(1, num_rows + 1):
@@ -35,50 +28,95 @@ def generate_mock_respostas(num_rows = 50)->pd.DataFrame:
             email,
             f"55{''.join(str(random.randint(0,9)) for _ in range(8))}",
             area,
-            problema,
-            "R$30",
-            "Sim",
         ]
         data.append(row)
-    df_respostas = pd.DataFrame(data, columns=columns)
+    df_respostas = pd.DataFrame(data, columns=["datetime", "name", "email", "phone", "area"])
     return df_respostas
 
-def generate_mock_professionals(n=50, seed=42)-> pd.DataFrame:
+def generate_mock_professionals(n=50, seed=42,dual=False)-> pd.DataFrame:
     fake = Faker()
     random.seed(seed)
     Faker.seed(seed)
-
-    users=[{"name": "Gustavo USP", "area": "Psicoterapia", "email":"gustavo.honda10@gmail.com", "phone":"11950440023"},
-             {"name": "Alaska", "area": "Psicoterapia", "email":"yalaska95@gmail.com", "phone": "11912345678"},
-             {"name": "Gustavo Pessoal", "area": "Psicoterapia", "email":"gustavo_honda@usp.br", "phone": "11977777777"},
-             {"name": "Empty email", "area": "Psicoterapia", "email":"", "phone": "119987654321"},
-             {"name": "Empty phone", "area": "Psicoterapia", "email":"gustavo.honda10@gmail.com", "phone": ""}
-             ]
-
     data = []
-    for i in range(1, n + 1):
-        user = random.choice(users)
-        data.append({
-            "name": user["name"],
-            "area": user["area"],
-            "whatsapp": user["phone"],
-            "email": user["email"],
-            "active": True,
-            "payday": "2024-12-31",
-        })
+    if dual:
+        n = n//2
 
-    df = pd.DataFrame(data)
+    for i in range(1, n + 1):
+        user = {
+            "name": fake.name(),
+            "area": random.choice(areas),
+            "phone": f"55{''.join(str(random.randint(0,9)) for _ in range(8))}",
+            "email": fake.email(),
+            "active": 1
+        }
+        data.append(user)
+
+    if dual:
+        for user in data.copy():
+            user_dual = user.copy()
+            while True:
+                user_dual["area"] = random.choice(areas)
+                if user_dual["area"] != user["area"]:
+                    break
+            data.append(user_dual)
+    df = pd.DataFrame(data, columns=user.keys())
     return df
 
+def generate_mock_matches(df_profissionais=None, df_respostas=None)-> pd.DataFrame:
+    all_records = set()
+    match_records = [[],[],[]]
+    data = []
+    begin = pd.Timestamp("2025-01-01")
+    now = pd.Timestamp.now()
+    time = begin
+    while time < now:
+        for index, profissional in df_profissionais.iterrows():
+            for _ in range(4):  # Tenta encontrar um paciente para o profissional
+                while True:
+                    resposta = df_respostas.sample(1).iloc[0]
+                    record = resposta["phone"]
+                    tup = profissional["phone"],resposta["phone"]
+                    if resposta["phone"] not in match_records[0] and resposta["phone"] not in match_records[1] and resposta["phone"] not in match_records[2]:
+                        match_records[2].append(resposta["phone"])
+                        all_records.add(tup)
+                        break
+                fake_date = fake.date_between_dates(
+                date_start=begin,
+                date_end=pd.Timestamp.now()
+                )
+                row = {
+                    "datetime": resposta["datetime"],
+                    "name_paciente": resposta["name"],
+                    "name_professional": profissional["name"],
+                    "phone_paciente": resposta["phone"],
+                    "phone_professional": profissional["phone"],
+                    "area": resposta["area"],
+                    "email_professional": profissional["email"],
+                    "match_time": time.strftime("%Y-%m-%d %H:%M:%S")
+                }
+                data.append(row)
+        time += pd.Timedelta(days=29)
+        print(time)
+        match_records[0] = match_records[1].copy()
+        match_records[1] = match_records[2].copy()
+        match_records[2] = []
+    df_matches = pd.DataFrame(data, columns=row.keys())
+    return df_matches
 
+
+def mock()-> None:
+    professionals = 10
+    months = 3
+    pacients_per_professional = 4
+    df_profissionais = generate_mock_professionals(professionals, seed=42, dual=True)
+    df_respostas = generate_mock_respostas(professionals*pacients_per_professional*months)
+    df_matches = generate_mock_matches(df_profissionais, df_respostas)
+    df_profissionais.to_csv("./csv/mock/mock_professional.csv", index=False)
+    df_respostas.to_csv("./csv/mock/mock_respostas.csv", index=False)
+    df_matches.to_csv("./csv/mock/mock_matchings.csv", index=False)
 
 def main()->None:
-    df_profissionais = generate_mock_professionals(50)
-    df_respostas = generate_mock_respostas(50)
-    
-    df_profissionais.to_csv("./csv/mock_professionais.csv", index=False)
-    df_respostas.to_csv("./csv/mock_respostas.csv", index=False)
-
+    mock()
     
 if __name__ == "__main__":
     main()

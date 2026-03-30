@@ -39,7 +39,6 @@ def extrair_precos(texto)-> list:
 
 
 def preprocess_respostas(df)->pd.DataFrame:
-    
     # Rename columns
     name_columns= ['datetime','name_paciente','e-mail','phone_paciente','area']
     columns = list(df.columns)
@@ -49,6 +48,10 @@ def preprocess_respostas(df)->pd.DataFrame:
 
     # Clean phone number
     df["phone_paciente"] = df["phone_paciente"].astype(str).str.replace(r"\D", "", regex=True)
+
+    #Datetime
+    df.loc[:,'datetime'] = pd.to_datetime(df['datetime'], dayfirst=True)
+    
 
     # Area column
     df.loc[:,"area"] = df["area"].str.split(",")
@@ -68,6 +71,8 @@ def preprocess_respostas(df)->pd.DataFrame:
 
     update_data(df=df_paciente_area, sheets_name="db-metAMORfose", page="Paciente_area", index="phone_paciente")
     update_data(df=df_paciente, sheets_name="db-metAMORfose", page="Paciente", index="phone_paciente")
+
+    df = df.astype(str)
     return df
 
 
@@ -90,7 +95,7 @@ def preprocess_professional(df) -> pd.DataFrame:
     df.loc[:,'area'] = df['area'].str.strip()
     df_professional_area = df[['phone_professional','area']].drop_duplicates().reset_index(drop=True)
     
-
+   
 
     # Drop empty data
     df = df.map(lambda x: np.nan if isinstance(x, str) and x.strip() == "" else x)
@@ -106,6 +111,7 @@ def preprocess_professional(df) -> pd.DataFrame:
 
     # Remove linhas que tem valor da coluna 'active' como zero
     df = df[df['active'] == 1] 
+    
 
     return df
 
@@ -132,7 +138,7 @@ def open_matches()-> pd.DataFrame:
         print(f"Error in open_matchings function.")
         return pd.DataFrame()
     
-def save_matches(df_matches, df_match_all,save)->None:
+def save_matches(df_matches,save)->None:
     base_dir = get_project_root()
     df_matches.to_csv(Path(base_dir, f"./csv/matchings_result.csv"),index=False)
     
@@ -144,21 +150,27 @@ def save_matches(df_matches, df_match_all,save)->None:
         append_data(df=df, sheets_name="db-metAMORfose", page="Matches")
         print("Data send!")
 
-def open_mock()->pd.DataFrame:
-    mock_path = Path(base_path, "csv/mock/", "mock_match.csv")
+def open_send_matchings()->pd.DataFrame:
+    mock_path = Path(base_path, "csv/mock/", "mock_send_matchings.csv")
+    df = pd.read_csv(mock_path, sep=",",encoding="utf-8",index_col=0)
+    df.reset_index(inplace=True)
+    return df
+
+def open_mock_matches()->pd.DataFrame:
+    mock_path = Path(base_path, "csv/mock/", "mock_matchings.csv")
     df = pd.read_csv(mock_path, sep=",",encoding="utf-8",index_col=0)
     df.reset_index(inplace=True)
     return df
 
 def open_mock_professional()->pd.DataFrame:
-    mock_path = Path(base_path, "csv", "mock_professionais.csv")
+    mock_path = Path(base_path, "csv/mock/", "mock_professional.csv")
     df = pd.read_csv(mock_path, sep=",",encoding="utf-8",index_col=0)
     df.reset_index(inplace=True)
     df = preprocess_professional(df)
     return df
 
 def open_mock_respostas()->pd.DataFrame:
-    mock_path = Path(base_path, "csv", "mock_respostas.csv")
+    mock_path = Path(base_path, "csv/mock/", "mock_respostas.csv")
     df = pd.read_csv(mock_path, sep=",",encoding="utf-8",index_col=0)
     df.reset_index(inplace=True)
     df = preprocess_respostas(df)
@@ -198,10 +210,12 @@ def append_data(sheets_name="db-metAMORfose", page = None, df=None)-> None:
     sheet.append_rows(payload, value_input_option="USER_ENTERED")
 
 def update_data(sheets_name="db-metAMORfose", page = None, df=None, index = "")-> None:
+    df = df.astype(str)
     df_old = get_data(sheets_name, page)
     if df_old is None or df_old.empty:
         send_data(sheets_name, page, df)
         return
+    
     df_old.set_index(index, inplace=True)
     df_new = df.set_index(index, inplace=False)
     df = df_new.combine_first(df_old).drop_duplicates(keep='first').reset_index()

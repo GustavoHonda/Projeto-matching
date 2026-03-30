@@ -1,5 +1,4 @@
-from os import error, write
-from src.get_data import open_professional, open_respostas, open_mock, open_matches
+from src.get_data import open_professional, open_respostas, open_mock_matches, open_matches
 from src.get_data import open_mock_professional, open_mock_respostas, data_info
 from src.send_msg import AWS_Sender
 from src.matching import match
@@ -9,6 +8,8 @@ from tkinter import simpledialog, messagebox
 SAVE_MATCH = True    # True, False
 SAFE_TO_SEND = False   # True, False
 EXECUTION_MODE = "production"  # production, mock, manual
+
+# Try with empty table match 
 
 def main(execution_mode, safe_to_send, save_match)-> int:
 
@@ -28,10 +29,8 @@ def main(execution_mode, safe_to_send, save_match)-> int:
         print("Running in mock mode...")
         df_professional = open_mock_professional()
         df_respostas = open_mock_respostas()
-        df_matchings = open_matches()
-        matched = match(df_professional, df_respostas, df_matchings,save_match)
-        df_respostas.to_csv("./csv/respostas.csv")
-        df_professional.to_csv("./csv/professional.csv")
+        df_matchings = open_mock_matches()
+        matched = match(df_professional, df_respostas, df_matchings,False)
 
     elif execution_mode == "manual":
         print("Running in manual mode...")
@@ -41,6 +40,8 @@ def main(execution_mode, safe_to_send, save_match)-> int:
         print("respostas opened...")
         df_matchings = open_matches()
         print("respostas matchigs...")
+        matched = match(df_professional, df_respostas, df_matchings,False)
+        matched.to_csv("./csv/matches_manual.csv", index=False)
         return 0
     else:
         raise ValueError("valor de EXECUTION_MODE inválido")
