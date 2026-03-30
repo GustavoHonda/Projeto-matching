@@ -4,6 +4,8 @@ from tkinter import simpledialog, messagebox
 
 if __name__ == "__main__":
 
+    # main(EXECUTION_MODE="production", SAFE_TO_SEND=0, SAVE_MATCH= 1)
+
     root = tk.Tk()
     root.withdraw()
 

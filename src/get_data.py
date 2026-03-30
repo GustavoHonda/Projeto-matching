@@ -9,13 +9,6 @@ from typing import Any
 
 base_path = get_project_root()
 
-# Erros/implementações que tem pra fazer/corrigir nesse módulo:
-# 1. (FEITO)coluna price de df_respostas tem descrição (str) dos preços solicitados, precisa transformar para (int).
-# 2. (FEITO)extrair mais informações da descrição das respostas de cada paciente(implementação complicada).
-# 3. Acrescentar type columns para cada coluna do cliente.
-# 4. Trocar id das URL dos google sheets para os de produção.
-# 5. Testar sem envio de mensagens pressionando enter.
-
 def data_info(df, column)-> None:
     """
     Função auxiliar que mostra os valores únicos, tipo e frequência de uma coluna do DataFrame.
@@ -48,52 +41,33 @@ def extrair_precos(texto)-> list:
 def preprocess_respostas(df)->pd.DataFrame:
     
     # Rename columns
-    name_columns= ['time','name_paciente','e-mail','phone_paciente','area','free_service','price']
+    name_columns= ['datetime','name_paciente','e-mail','phone_paciente','area']
     columns = list(df.columns)
     for i, col in enumerate(name_columns):
         columns[i] = col
     df.columns = columns
-    
+
     # Clean phone number
     df["phone_paciente"] = df["phone_paciente"].astype(str).str.replace(r"\D", "", regex=True)
-
-    # Remove empty
-    df = df.map(lambda x: np.nan if isinstance(x, str) and x.strip() == "" else x)
-    df = df.dropna(axis=1, how='all')
-    df = df.dropna(axis=0, subset=['time', 'name_paciente', 'phone_paciente', 'area', 'description'])
-
-    df["consent"] = df["description"].str.contains("LGPD", case=False, na=False) 
-
-    # Send respostas data to google sheets
-    df.insert(0, "id_resposta", df.index)
-    df_respostas = df[['id_resposta','phone_paciente','time','free_service','price']].drop_duplicates().reset_index(drop=True)
-    send_data(df=df_respostas, sheets_name="db-metAMORfose", page="Respostas")
-
-    # Datetime column (optional)
-    df.loc[:,'datetime'] = pd.to_datetime(df['time'], dayfirst=True)
-    df[['date','time']] = df['time'].str.split(" ", expand= True )
-    
-    # Price Column (optional)
-    df['price'] = df['price'].apply(extrair_precos)
-    df["price_max"] = df["price"].apply(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else 300)
-    df["price_min"] = df["price"].apply(lambda x: x[1] if isinstance(x, list) and len(x) > 1 else 35)
-    df.drop(columns=['price'], inplace=True)
-
-    # Send pacientes data to google sheets
-    df.insert(0, "id_paciente", df.index)
-    df_paciente = df[['id_paciente','name_paciente','phone_paciente','e-mail']].drop_duplicates().reset_index(drop=True)
-    send_data(df=df_paciente, sheets_name="db-metAMORfose", page="Paciente")
 
     # Area column
     df.loc[:,"area"] = df["area"].str.split(",")
     df = df.explode('area')
     df.loc[:,'area'] = df['area'].str.replace(":","", regex=True)
     df.loc[:,'area'] = df['area'].str.strip()
-    
-    # Send problems data to google sheets
-    df_problems = df[['id_resposta','area','description']].drop_duplicates().reset_index(drop=True)
-    send_data(df=df_problems, sheets_name="db-metAMORfose", page="Problem") 
+    df_paciente_area = df[['phone_paciente','area']].drop_duplicates().reset_index(drop=True)
 
+    # Send pacientes data to google sheets
+    df = df.dropna(axis=1,how='all')
+    df = df.map(lambda x: np.nan if isinstance(x, str) and x.strip() == "" else x)
+    df = df.dropna(axis=0, subset=['name_paciente', 'phone_paciente', 'area'])
+    df = df.fillna('').infer_objects(copy=False)
+    df.reset_index(inplace=True, drop=True)
+    df_paciente = df.drop_duplicates(subset=['phone_paciente'], keep='first')
+    df_paciente = df_paciente[['phone_paciente','name_paciente','e-mail','datetime']]
+
+    update_data(df=df_paciente_area, sheets_name="db-metAMORfose", page="Paciente_area", index="phone_paciente")
+    update_data(df=df_paciente, sheets_name="db-metAMORfose", page="Paciente", index="phone_paciente")
     return df
 
 
@@ -105,53 +79,51 @@ def preprocess_professional(df) -> pd.DataFrame:
     for i, col in enumerate(name_columns):
         columns[i] = col
     df.columns = columns
+
+     # Clean phone number
+    df.loc[:,'phone_professional'] = df['phone_professional'].apply(lambda x: x.replace("wa.me/","") if type(x) == str else x)
     
-    # Area column
+    # Professional_area Table
     df.loc[:,"area"] = df["area"].str.split(",")
     df = df.explode('area')
     df.loc[:,'area'] = df['area'].str.replace(":","", regex=True)
     df.loc[:,'area'] = df['area'].str.strip()
+    df_professional_area = df[['phone_professional','area']].drop_duplicates().reset_index(drop=True)
+    
 
+
+    # Drop empty data
     df = df.map(lambda x: np.nan if isinstance(x, str) and x.strip() == "" else x)
-
-    # Remove unwanted data
     df = df.dropna(axis=1,how='all')
     df = df.dropna(axis=0,subset=['name_professional', 'area', 'phone_professional','email_professional'])
-    df.loc[:,'phone_professional'] = df['phone_professional'].apply(lambda x: x.replace("wa.me/","") if type(x) == str else x)
-
     df = df.fillna('').infer_objects(copy=False)
-
     df.reset_index(inplace=True, drop=True)
-    df.insert(0, "id_professional", df.index)
+    df_professional = df.drop_duplicates(subset=['phone_professional'], keep='first')
+    df_professional = df_professional[['phone_professional','name_professional','email_professional','area']]
 
-
-
-    send_data(df=df, sheets_name="db-metAMORfose", page="Professional")
+    update_data(df=df_professional_area, sheets_name="db-metAMORfose", page="Professional_area", index="phone_professional")
+    update_data(df=df_professional, sheets_name="db-metAMORfose", page="Professional", index="phone_professional")
 
     # Remove linhas que tem valor da coluna 'active' como zero
     df = df[df['active'] == 1] 
 
     return df
 
-
 def open_respostas()-> pd.DataFrame:
-    client = set_credentials()
-    df = get_data(sheets_name="Respostas-2025",page="Respostas", client=client)
+    df = get_data(sheets_name="Respostas-2025",page="Respostas")
     df = preprocess_respostas(df)
     return df
 
 
 def open_professional()-> pd.DataFrame:
     client = set_credentials()
-    df = get_data(sheets_name="Profissionais",page="Página1", client=client)
+    df = get_data(sheets_name="Profissionais",page="Página1")
     df = preprocess_professional(df)
     return df
 
-
 def open_matches()-> pd.DataFrame:
     try:
-        client = set_credentials()
-        df = get_data(sheets_name="db-metAMORfose", page="Matches", client=client)
+        df = get_data(sheets_name="db-metAMORfose", page="Matches")
         if df is None or df.empty:
             return pd.DataFrame(columns=["name_paciente", "name_professional" ,"phone_paciente" , "phone_professional", "area", "price_min", "price_max", "datetime","email_professional","match_time"])
         return df
@@ -160,33 +132,23 @@ def open_matches()-> pd.DataFrame:
         print(f"Error in open_matchings function.")
         return pd.DataFrame()
     
-    
-def save_matches(df_matches, df_all_matches,save)->None:
+def save_matches(df_matches, df_match_all,save)->None:
     base_dir = get_project_root()
-    df_all_matches.to_csv(Path(base_dir, f'./csv/matching_all.csv'), index=False)
-    df_matches.to_csv(Path(base_dir, f"./csv/matchings_selected.csv"),index=False)
+    df_matches.to_csv(Path(base_dir, f"./csv/matchings_result.csv"),index=False)
     
-    df = df_matches[["name_paciente", "name_professional", "phone_paciente", "phone_professional","description", "area", "datetime", "price_min", "price_max","email_professional","match_time"]]
-    
+    df = df_matches[["name_paciente", "name_professional", "phone_paciente", "phone_professional", "area", "datetime", "email_professional","match_time"]]
 
     if save:
         df = df.astype(str)
         df = df.fillna('').infer_objects(copy=False)
-        client = set_credentials()
-        sheet = client.open("db-metAMORfose")
-        sheet = sheet.worksheet("Matches")
-        data = df.values.tolist()
-        sheet.append_rows(data, value_input_option="USER_ENTERED")
+        append_data(df=df, sheets_name="db-metAMORfose", page="Matches")
         print("Data send!")
-    print("Data saved successfully!")
-
 
 def open_mock()->pd.DataFrame:
-    mock_path = Path(base_path, "csv", "mock_match.csv")
+    mock_path = Path(base_path, "csv/mock/", "mock_match.csv")
     df = pd.read_csv(mock_path, sep=",",encoding="utf-8",index_col=0)
     df.reset_index(inplace=True)
     return df
-
 
 def open_mock_professional()->pd.DataFrame:
     mock_path = Path(base_path, "csv", "mock_professionais.csv")
@@ -195,7 +157,6 @@ def open_mock_professional()->pd.DataFrame:
     df = preprocess_professional(df)
     return df
 
-
 def open_mock_respostas()->pd.DataFrame:
     mock_path = Path(base_path, "csv", "mock_respostas.csv")
     df = pd.read_csv(mock_path, sep=",",encoding="utf-8",index_col=0)
@@ -203,20 +164,16 @@ def open_mock_respostas()->pd.DataFrame:
     df = preprocess_respostas(df)
     return df
 
-
 def set_credentials() -> gspread.Client:
     scope = [
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive"
     ]
-
-    
     credentials_path = Path(base_path, "key", "sheets-service-account.json")
     creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
     client = gspread.authorize(creds)
     return client
-
 
 def send_data(sheets_name="db-metAMORfose", page = None,df=None)-> None:
     client = set_credentials()
@@ -224,43 +181,46 @@ def send_data(sheets_name="db-metAMORfose", page = None,df=None)-> None:
     sheet = sheet.worksheet(page)
     data = [df.columns.astype(str).tolist()] + df.astype(str).values.tolist()
     sheet.update(values=data, range_name="A1")
-
     
-def get_data(sheets_name = "db-metAMORfose", page = None,client=None)-> pd.DataFrame:
+def get_data(sheets_name = "db-metAMORfose", page = None)-> pd.DataFrame:
+    client = set_credentials()
     sheet = client.open(sheets_name)
     sheet = sheet.worksheet(page)
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
     return df
 
-
-def rearange_matches():
+def append_data(sheets_name="db-metAMORfose", page = None, df=None)-> None:
     client = set_credentials()
+    sheet = client.open(sheets_name)
+    sheet = sheet.worksheet(page)
+    payload = df.fillna(0).values.tolist()
+    sheet.append_rows(payload, value_input_option="USER_ENTERED")
 
-    df_matchest = get_data(sheets_name="db-metAMORfose", page="Matches", client=client)
-    df_profissional = get_data(sheets_name="db-metAMORfose", page="Professional", client=client)
-    df_paciente = get_data(sheets_name="db-metAMORfose", page="Paciente", client=client)
-
-    df = pd.merge(df_matchest[["phone_professional","phone_paciente"]], df_profissional[["phone_professional","id_professional"]], left_on='phone_professional', right_on='phone_professional', how='left', suffixes=('_paciente', '_professional'))
-    df = pd.merge(df, df_paciente[["phone_paciente","id_paciente"]], left_on='phone_paciente', right_on='phone_paciente', how='left', suffixes=('_professional', '_paciente'))
-
-    df_missing = df[df["id_paciente"].isna()]
-    df_missing = df_missing.drop_duplicates(subset=["phone_paciente"], keep="first")
-    df_missing = df_missing.reset_index(drop=True)
-
-    send_data(sheets_name="db-metAMORfose", page="Matches2", df=df)
-
-    send_data(sheets_name="db-metAMORfose", page="Missing", df=df_missing)
-
-
+def update_data(sheets_name="db-metAMORfose", page = None, df=None, index = "")-> None:
+    df_old = get_data(sheets_name, page)
+    if df_old is None or df_old.empty:
+        send_data(sheets_name, page, df)
+        return
+    df_old.set_index(index, inplace=True)
+    df_new = df.set_index(index, inplace=False)
+    df = df_new.combine_first(df_old).drop_duplicates(keep='first').reset_index()
+    client = set_credentials()
+    sheet = client.open(sheets_name)
+    sheet = sheet.worksheet(page)
+    df_payload = df.replace({np.nan: None})
+    payload = [df_payload.columns.tolist()] + df_payload.values.tolist()
+    sheet.update(values=payload, range_name="A1", value_input_option="USER_ENTERED")
 
 def main()-> None:
     df_resposta = open_respostas()
     df_professional = open_professional()
+    df_match = open_matches()
+    print(len(df_resposta), len(df_professional), len(df_match))
+
     df_resposta.to_csv("./csv/respostas.csv")
     df_professional.to_csv("./csv/professional.csv")
-
+    df_match.to_csv("./csv/matchings.csv", index = False)
 
 if __name__ == "__main__":
     main()
-    rearange_matches()

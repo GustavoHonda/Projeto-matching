@@ -39,7 +39,7 @@ class AWS_Sender(SendMsg):
             },
             Content={
                 'Template': {
-                    'TemplateName': 'metamorfose_template',
+                    'TemplateName': 'metamorfose_template3',
                     'TemplateData': template_json
                 }
             }
@@ -61,7 +61,6 @@ def create_template(name):
         TemplateContent={
             'Subject': 'Novos Pacientes!',
             'Text': '''Olá {{name_professional}}, tudo bem? Sou a Inteligência Artificial da Rede MetAMORfose, você assinou conosco como profissional da área de {{area}}.
-                Promovemos suas conexões com pacientes - temos Pacientes que sugerem R$150 a R$35 a consulta (para Profissionais Premium) e Pacientes de +R$300 a R$50 por consulta (para Profissionais Platinum e Superior).
                 
                 Temos um guia de como conversar com paciente em orgmetamorfose.com.br/manual-de-uso 
 
@@ -81,7 +80,6 @@ def create_template(name):
                     <p style="color:#333; text-decoration:none;">
                         Sou a <strong>Inteligência Artificial da Rede MetAMORfose</strong>.  
                         Você se cadastrou conosco como profissional da área de <strong>{{area}}</strong>.<br>
-                        Promovemos suas conexões com pacientes - temos Pacientes que sugerem R$150 a R$35 a consulta (para Profissionais Premium) e Pacientes de +R$300 a R$50 por consulta (para Profissionais Platinum e Superior).
                     </p>
 
                     <p style="color:#333; text-decoration:none;">
@@ -145,12 +143,17 @@ def check_templates(name):
         print(f"Template {name} não existe.")
         return False
 
+def new_template(template_name = 'metamorfose_template3'):
+    check = check_templates(template_name)
+    if check:
+        print("Delete previous template (1 = Yes, 0 = No)")
+        if input():
+            delete_template(template_name)
+    create_template(template_name)
+    check_templates(template_name)
+
 if __name__ == '__main__':
-    template_name = 'metamorfose_template'
-    # check = check_templates(template_name)
-    # if check:
-    #     delete_template(template_name)
-    # create_template(template_name)
+    new_template('metamorfose_template3')
     df = open_mock()
     sender = AWS_Sender()
     response = sender.send_batch(df)

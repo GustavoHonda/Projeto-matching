@@ -1,5 +1,5 @@
 import pandas as pd
-from src.get_data import extrair_precos, preprocess_respostas
+from src.get_data import extrair_precos, preprocess_respostas, open_matches, open_professional, open_respostas
 
 def test_extrair_precos_simples()-> None:
     assert extrair_precos("R$ 200,00") == [200.0]
@@ -37,3 +37,24 @@ def test_preprocess_respostas_minimal(monkeypatch)-> None:
     assert df['price_max'].iloc[0] == 35.0
     assert df['area'].iloc[0] == 'Psicologia'
     assert 'datetime' in df.columns
+
+def test_get_professional(monkeypatch)-> None:
+    df_professional = open_professional()
+    assert not df_professional.empty
+    for col in ["id_professional","name_professional","area","phone_professional","email_professional","active"]:
+        assert col in list(df_professional.columns)
+
+def test_get_matches(monkeypatch)-> None:
+    df_matches = open_matches()
+    assert not df_matches.empty
+    for col in ["name_paciente","name_professional","phone_paciente","phone_professional","area","datetime","min_price","max_price","email_professional","match_time"]:
+        assert col in list(df_matches.columns)
+
+
+def test_get_respostas(monkeypatch)-> None:
+    df_respostas = open_respostas()
+    assert not df_respostas.empty
+    for col in ["name_paciente" ,"phone_paciente", "area", "price_min", "price_max", "datetime"]:
+        assert col in list(df_respostas.columns)
+
+
