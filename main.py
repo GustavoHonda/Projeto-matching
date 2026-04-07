@@ -16,7 +16,7 @@ if __name__ == "__main__":
     if user_input == "send":
         
         messagebox.showinfo(title="Sender",message="Envio confirmado!")
-        main(EXECUTION_MODE="production", SAFE_TO_SEND=1, SAVE_MATCH= 1)
+        main(execution_mode="production", safe_to_send=1, save_match= 1)
     else:
         messagebox.showwarning("Aviso", "A palavra digitada não foi send, cancelando o envio")
 
